@@ -27,13 +27,13 @@ my_drive.axis0.encoder.config.cpr = 4096
 # Velocity Limit - keeping this low for now, but the motor can go much higher
 my_drive.axis0.controller.config.vel_limit = 2000.0
 # Current Calibration
-my_drive.axis0.motor.config.calibration_current = 20.0
+my_drive.axis0.motor.config.calibration_current = 5.0
 # Phase Inductance
 my_drive.axis0.motor.config.phase_inductance = 2.3983637220226228e-05
 # Phase Resistance
 my_drive.axis0.motor.config.phase_resistance = 0.058687932789325714
 # Current Limit - this is to protect the power supply
-my_drive.axis0.motor.config.current_lim = 30.0
+my_drive.axis0.motor.config.current_lim = 5.0
 # Encoder Configuration - setting encoder to use indexing
 my_drive.axis0.encoder.config.use_index = 1
 print("odrive configured")
@@ -51,8 +51,8 @@ print("full calibration sequence completed")
 #print("moved to position 1500")
 
 #this doesn't seem to be working rn (2.13.2019)
-my_drive.axis0.requested_state = CTRL_MODE_VELOCITY_CONTROL
-my_drive.axis0.controller.vel_setpoint = 1500
+my_drive.axis0.requested_state = CTRL_MODE_POSITION_CONTROL
+my_drive.axis0.controller.vel_setpoint = 1000
 print("defaulted to position control 'CTRL_MODE_VELOCITY_CONTROL")
 print("velocity set to 1500")
 
