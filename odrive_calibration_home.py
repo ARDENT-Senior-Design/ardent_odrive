@@ -27,13 +27,13 @@ my_drive.axis0.encoder.config.cpr = 4096
 # Velocity Limit - keeping this low for now, but the motor can go much higher
 my_drive.axis0.controller.config.vel_limit = 2000.0
 # Current Calibration
-my_drive.axis0.motor.config.calibration_current = 5.0
+my_drive.axis0.motor.config.calibration_current = 5.0  # changed from 20.0
 # Phase Inductance
 my_drive.axis0.motor.config.phase_inductance = 2.3983637220226228e-05
 # Phase Resistance
 my_drive.axis0.motor.config.phase_resistance = 0.058687932789325714
 # Current Limit - this is to protect the power supply
-my_drive.axis0.motor.config.current_lim = 5.0
+my_drive.axis0.motor.config.current_lim = 5.0  # changed from 30.0
 # Encoder Configuration - setting encoder to use indexing
 my_drive.axis0.encoder.config.use_index = 1
 print("odrive configured")
@@ -45,31 +45,32 @@ while my_drive.axis0.current_state != AXIS_STATE_IDLE:
 print("full calibration sequence completed")
 
 #this works
-#my_drive.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
-#my_drive.axis0.controller.pos_setpoint = 1500
-#print("defaulted to position control 'AXIS_STATE_CLOSED_LOOP_CONTROL")
-#print("moved to position 1500")
+my_drive.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
+my_drive.axis0.controller.pos_setpoint = 1500
+print("defaulted to position control 'AXIS_STATE_CLOSED_LOOP_CONTROL")
+print("moved to position 1500")
 
-#this doesn't seem to be working rn (2.13.2019)
-my_drive.axis0.requested_state = CTRL_MODE_POSITION_CONTROL
-my_drive.axis0.controller.vel_setpoint = 1000
-print("defaulted to position control 'CTRL_MODE_VELOCITY_CONTROL")
-print("velocity set to 1500")
+#this doesn't seem to be working rn (2.13.2019, but not 2.18.2019)
+#now it works, but needed to go to closed loop control then pos then vel ctrl
+#my_drive.axis0.controller.config.control_mode = CTRL_MODE_VELOCITY_CONTROL
+#my_drive.axis0.controller.vel_setpoint = 1500
+#print("defaulted to position control 'CTRL_MODE_VELOCITY_CONTROL")
+#print("velocity set to 1500")
 
 print("")
 print("Please Manually Connect: 'sudo odrivetool shell'")
 print("please select a control mode:")
 print("- checking for errors: odrv0.axis0.controller.config.control_mode")
-print("- example: odrv0.axis0.requested_state = CTRL_MODE_POSITION_CONTROL (mode 3")
-print("- example: odrv0.axis0.requested_state = CTRL_MODE_VELOCITY_CONTROL (mode 2")
-print("- example: odrv0.axis0.requested_state = CTRL_MODE_CURRENT_CONTROL (mode 1)")
-print("- example: odrv0.axis0.requested_state = CTRL_MODE_VOLTAGE_CONTROL (mode 0)")
+print("- example: odrv0.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL (mode 3")
+print("- example: odrv0.axis0.controller.config.control_mode = CTRL_MODE_VELOCITY_CONTROL (mode 2")
+print("- example: odrv0.axis0.controller.config.control_mode = CTRL_MODE_CURRENT_CONTROL (mode 1)")
+print("- example: odrv0.axis0.controller.config.control_mode = CTRL_MODE_VOLTAGE_CONTROL (mode 0)")
 
 
 print("- checking for errors: odrv0.axis0.motor.is_calibrated")
 print("- checking for errors: odrv0.axis0.motor.error")
-print("- checking for errors: hex(odrv0.axis0.error)")
-print("- checking for errors: hex(odrv0.axis0.encoder.error)")
 print("- checking for encoder: odrv0.axis0.encoder.shadow_count")
+print("- checking for errors: hex(odrv0.axis0.encoder.error)")
+print("- checking for errors: hex(odrv0.axis0.error)")
 
 #is there a way to check what control mode is active currently (know what to set to zero before switching to another mode)
