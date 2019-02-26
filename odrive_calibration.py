@@ -53,8 +53,10 @@ print("moved to position 1500")
 #this doesn't seem to be working rn (2.13.2019, but not 2.18.2019)
 #now it works, but needed to go to closed loop control then pos then vel ctrl
 #noticed problems with back mounting flexing and encoder not straight
+#this works now - just needed to activate closed loop control beforehand
 my_drive.axis0.controller.config.control_mode = CTRL_MODE_VELOCITY_CONTROL
 my_drive.axis0.controller.vel_setpoint = 1500
+my_drive.axis0.requested_state = AXIS_STATE_IDLE
 print("defaulted to position control 'CTRL_MODE_VELOCITY_CONTROL")
 print("velocity set to 1500")
 
@@ -70,8 +72,10 @@ print("- example: odrv0.axis0.controller.config.control_mode = CTRL_MODE_VOLTAGE
 
 print("- checking for errors: odrv0.axis0.motor.is_calibrated")
 print("- checking for errors: odrv0.axis0.motor.error")
+print("-   note error is given in decimal --> convert to hex to find")
 print("- checking for encoder: odrv0.axis0.encoder.shadow_count")
 print("- checking for errors: hex(odrv0.axis0.encoder.error)")
+print("-   note 0x30 is 0x10 | 0x20  (brake resistor unexpectedly disarmed + motor unexpectedly disarmed))")
 print("- checking for errors: hex(odrv0.axis0.error)")
 
 #is there a way to check what control mode is active currently (know what to set to zero before switching to another mode)
