@@ -35,7 +35,7 @@ my_drive.axis0.motor.config.phase_resistance = 0.058687932789325714
 # Current Limit - this is to protect the power supply
 my_drive.axis0.motor.config.current_lim = 30.0  # changed from 30.0
 # Encoder Configuration - setting encoder to use indexing
-my_drive.axis0.encoder.config.use_index = 1
+my_drive.axis0.encoder.config.use_index = 1  # True
 print("odrive configured")
 
 print("starting calibration...")
@@ -44,21 +44,32 @@ while my_drive.axis0.current_state != AXIS_STATE_IDLE:
     time.sleep(0.1)
 print("full calibration sequence completed")
 
-#this works
+# this works
 my_drive.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
 my_drive.axis0.controller.pos_setpoint = 1500
 print("defaulted to position control 'AXIS_STATE_CLOSED_LOOP_CONTROL")
 print("moved to position 1500")
 
-#this doesn't seem to be working rn (2.13.2019, but not 2.18.2019)
-#now it works, but needed to go to closed loop control then pos then vel ctrl
-#noticed problems with back mounting flexing and encoder not straight
-#this works now - just needed to activate closed loop control beforehand
-my_drive.axis0.controller.config.control_mode = CTRL_MODE_VELOCITY_CONTROL
-my_drive.axis0.controller.vel_setpoint = 1500
+# this doesn't seem to be working rn (2.13.2019, but not 2.18.2019)
+# now it works, but needed to go to closed loop control then pos then vel ctrl
+# noticed problems with back mounting flexing and encoder not straight
+# this works now - just needed to activate closed loop control beforehand
+#my_drive.axis0.controller.config.control_mode = CTRL_MODE_VELOCITY_CONTROL
+#my_drive.axis0.controller.vel_setpoint = 1500
+#print("defaulted to position control 'CTRL_MODE_VELOCITY_CONTROL")
+#print("velocity set to 1500")
+
+my_drive.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL
+my_drive.axis0.controller.pos_setpoint = 1500
+print("defaulted to position control 'CTRL_MODE_POSITION_CONTROL")
+print("position set to 1500")
+print("waiting...")
+time.sleep(1.5)  #this is wait time in secondsn-assuming move from 0
+print("waited for 1")
 my_drive.axis0.requested_state = AXIS_STATE_IDLE
-print("defaulted to position control 'CTRL_MODE_VELOCITY_CONTROL")
-print("velocity set to 1500")
+
+#my_drive.axis0.requested_state = AXIS_STATE_IDLE
+# each line is executed line by line, so if this comes right after pos_setpoint, the action doesn't complete
 
 print("")
 print("Please Manually Connect: 'sudo odrivetool shell'")
