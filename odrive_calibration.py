@@ -36,6 +36,9 @@ my_drive.axis0.motor.config.phase_resistance = 0.058687932789325714
 my_drive.axis0.motor.config.current_lim = 30.0  # changed from 30.0
 # Encoder Configuration - setting encoder to use indexing
 my_drive.axis0.encoder.config.use_index = 1  # True
+
+#my_drive.save_configuration()
+
 print("odrive configured")
 
 print("starting calibration...")
@@ -88,5 +91,4 @@ print("- checking for encoder: odrv0.axis0.encoder.shadow_count")
 print("- checking for errors: hex(odrv0.axis0.encoder.error)")
 print("-   note 0x30 is 0x10 | 0x20  (brake resistor unexpectedly disarmed + motor unexpectedly disarmed))")
 print("- checking for errors: hex(odrv0.axis0.error)")
-
-#is there a way to check what control mode is active currently (know what to set to zero before switching to another mode)
+print("- checking for control mode: odrv0.axis0.controller.config.control_mode")
