@@ -20,7 +20,6 @@ print("found odrive")
 #    time.sleep(0.1)
 #print("full calibration sequence completed")
 
-# assuming that motor is already calibrated
 my_drive.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
 #print("defaulted to position control 'AXIS_STATE_CLOSED_LOOP_CONTROL")
 my_drive.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL
