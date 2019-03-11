@@ -12,7 +12,11 @@ import math
 
 """-----------------------------------------------------------------------"""
 #development:
+# user input --> calibration, close etc
+# 
 # odrive not found, retry?
+# write on pop up window instead of cmd
+# integrate odrive_demo.py as well?
 """-----------------------------------------------------------------------"""
 
 #Create Window object
