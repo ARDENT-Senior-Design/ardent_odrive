@@ -11,6 +11,10 @@ import time
 import math
 
 """-----------------------------------------------------------------------"""
+#development:
+# odrive not found, retry?
+"""-----------------------------------------------------------------------"""
+
 #Create Window object
 window=Tk()
 
@@ -58,7 +62,40 @@ def trajectoryctrl():
 def currentctrl():
 	print("odrv0.axis0.requested_state = CTRL_MODE_CURRENT_CONTROL")
 
+#User Interface
+#def main(mode, userInput):
+def main():
+	debug = False
+	userInput = input("What mode do you want?? ")
+	while debug == False:
+		if userInput == "0":
+			print ("This is now in Debug Mode")
+			mode = userInput
+			#print(mode)
+			restart = input("Do you wish to restart (y/n)? ").lower()
+			if restart == "y":
+				main()
+			else:
+				exit()
+		elif userInput == "1":
+			print ("This is now in User Mode")
+			mode = userInput
+			#print(mode)
+			restart = input("Do you wish to restart (y/n)? ").lower()
+			if restart == "y":
+				main()
+			else:
+				exit()
+		else:
+			print ("That is not a valid entry, please enter 0 or 1")
+			restart = input("Restart (y/n)? ").lower()
+			if restart == "y":
+				main()
+			else:
+				exit()
+
 """-----------------------------------------------------------------------"""
+
 #Define buttons
 b1=Button(window,text="Calibration", width=12, command=calibration)
 b1.grid(row=2,column=3)
@@ -79,4 +116,9 @@ b1=Button(window,text="Close", width=12, command=closewindow)
 b1.grid(row=7,column=3)
 b1.configure(text="Close")
 
-window.mainloop()
+#window.mainloop()
+
+"""-----------------------------------------------------------------------"""
+
+if __name__ == "__main__":
+	main()
