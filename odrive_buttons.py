@@ -17,6 +17,8 @@ import math
 # odrive not found, retry?
 # write on pop up window instead of cmd
 # integrate odrive_demo.py as well?
+# reset input() variable instead of setting it to zero (goes to error if restarted from any mode)
+# getting rid of unnecessary varables
 """-----------------------------------------------------------------------"""
 
 #Create Window object
@@ -61,41 +63,93 @@ def posctrl():
 	print("odrv0.axis0.requested_state = CTRL_MODE_POSITION_CONTROL")
 def velctrl():
 	print("odrv0.axis0.requested_state = CTRL_MODE_VELOCITY_CONTROL")
-def trajectoryctrl():
+def trajctrl():
 	print("odrv0.axis0.requested_state = CTRL_MODE_TRAJECTORY_CONTROL")
 def currentctrl():
 	print("odrv0.axis0.requested_state = CTRL_MODE_CURRENT_CONTROL")
 
 #User Interface
-#def main(mode, userInput):
+# modes: position, velocity, current, trajectory
 def main():
 	debug = False
 	userInput = input("What mode do you want?? ")
 	while debug == False:
-		if userInput == "0":
-			print ("This is now in Debug Mode")
-			mode = userInput
-			#print(mode)
-			restart = input("Do you wish to restart (y/n)? ").lower()
+		if userInput == "calibration":
+			print ("Now Calibrating")
+			mode = "0"
+			print("mode " + mode)
+			#restart = input("Do you wish to restart (y/n)? ").lower()
+			restart = "y"
 			if restart == "y":
-				main()
+				userInput = "0"
+				mode = "0"
+				calibration()
 			else:
+				userInput = "0"
+				mode = "0"
 				exit()
-		elif userInput == "1":
-			print ("This is now in User Mode")
-			mode = userInput
-			#print(mode)
+		elif userInput == "pos":
+			print ("This is now in Position Control")
+			mode = "1"
+			print("mode " + mode)
 			restart = input("Do you wish to restart (y/n)? ").lower()
 			if restart == "y":
-				main()
+				userInput = "0"
+				mode = "0"
+				velctrl()
 			else:
+				userInput = "0"
+				mode = "0"
+				exit()
+		elif userInput == "vel":
+			print ("This is now in Velocity Control")
+			mode = "2"
+			print("mode " + mode)
+			restart = input("Do you wish to restart (y/n)? ").lower()
+			if restart == "y":
+				userInput = "0"
+				mode = "0"
+				velctrl()
+			else:
+				userInput = "0"
+				mode = "0"
+				exit()
+		elif userInput == "traj":
+			print ("This is now in Trajectory Control")
+			mode = "3"
+			print("mode " + mode)
+			restart = input("Do you wish to restart (y/n)? ").lower()
+			if restart == "y":
+				userInput = "0"
+				mode = "0"
+				trajctrl()
+			else:
+				userInput = "0"
+				mode = "0"
+				exit()
+		elif userInput == "current":
+			print ("This is now in Current Control")
+			mode = "4"
+			print("mode " + mode)
+			restart = input("Do you wish to restart (y/n)? ").lower()
+			if restart == "y":
+				userInput = "0"
+				mode = "0"
+				currentctrl()
+			else:
+				userInput = "0"
+				mode = "0"
 				exit()
 		else:
-			print ("That is not a valid entry, please enter 0 or 1")
+			print ("That is not a valid entry, please try pos, vel, current, traj")
 			restart = input("Restart (y/n)? ").lower()
 			if restart == "y":
+				userInput = "0"
+				mode = "0"
 				main()
 			else:
+				userInput = "0"
+				mode = "0"
 				exit()
 
 """-----------------------------------------------------------------------"""
@@ -110,7 +164,7 @@ b1.grid(row=3,column=3)
 b1=Button(window,text="Velocity Control", width=12, command=velctrl)
 b1.grid(row=4,column=3)
 
-b1=Button(window,text="Trajectory Control", width=12, command=trajectoryctrl)
+b1=Button(window,text="Trajectory Control", width=12, command=trajctrl)
 b1.grid(row=5,column=3)
 
 b1=Button(window,text="Current Control", width=12, command=currentctrl)
