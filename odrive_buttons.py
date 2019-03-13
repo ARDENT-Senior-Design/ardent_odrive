@@ -17,14 +17,36 @@ print("found odrive")
 
 """-----------------------------------------------------------------------"""
 # Development:
-# user input --> calibration, close etc
-# 
+
+# fix moving to multiple positions
+# check if calibrated at each mode - if not, prompt to calibrate
+# prompt user for what value to change to specific pos/vel
+ 
 # odrive not found, retry?
 # write on pop up window instead of cmd
 # integrate odrive_demo.py as well?
 # reset input() variable instead of setting it to zero (goes to error if restarted from any mode)
 # getting rid of unnecessary varables
 """-----------------------------------------------------------------------"""
+
+"""-----------------------------------------------------------------------
+print("please select a control mode:")
+print("- checking for errors: odrv0.axis0.controller.config.control_mode")
+print("- example: odrv0.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL (mode 3")
+print("- example: odrv0.axis0.controller.config.control_mode = CTRL_MODE_VELOCITY_CONTROL (mode 2")
+print("- example: odrv0.axis0.controller.config.control_mode = CTRL_MODE_CURRENT_CONTROL (mode 1)")
+print("- example: odrv0.axis0.controller.config.control_mode = CTRL_MODE_VOLTAGE_CONTROL (mode 0)")
+
+
+print("- checking for errors: odrv0.axis0.motor.is_calibrated")
+print("- checking for errors: odrv0.axis0.motor.error")
+print("-   note error is given in decimal --> convert to hex to find")
+print("- checking for encoder: odrv0.axis0.encoder.shadow_count")
+print("- checking for errors: hex(odrv0.axis0.encoder.error)")
+print("-   note 0x30 is 0x10 | 0x20  (brake resistor unexpectedly disarmed + motor unexpectedly disarmed))")
+print("- checking for errors: hex(odrv0.axis0.error)")
+print("- checking for control mode: odrv0.axis0.controller.config.control_mode")
+-----------------------------------------------------------------------"""
 
 """-----------------------------------------------------------------------
 # Create Window Object
@@ -94,45 +116,27 @@ def calibration():
 
 	my_drive.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
 	print("defaulted to position control 'AXIS_STATE_CLOSED_LOOP_CONTROL")
-
-	my_drive.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL
-	print("defaulted to position control 'CTRL_MODE_POSITION_CONTROL")
-	my_drive.axis0.controller.pos_setpoint = 1500
-	print("position set to 1500")
-	print("waiting...")
-	time.sleep(1.5)  #this is wait time in seconds-assuming move from 0
-	print("position at ~1500")
-	print("position set to 0")
-	print("waiting...")
-	time.sleep(1.5)
-	my_drive.axis0.controller.pos_setpoint = 0
-	print("position at ~0")
-	#my_drive.axis0.requested_state = AXIS_STATE_IDLE
 	
 	main()
 
-"""-----------------------------------------------------------------------
-print("please select a control mode:")
-print("- checking for errors: odrv0.axis0.controller.config.control_mode")
-print("- example: odrv0.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL (mode 3")
-print("- example: odrv0.axis0.controller.config.control_mode = CTRL_MODE_VELOCITY_CONTROL (mode 2")
-print("- example: odrv0.axis0.controller.config.control_mode = CTRL_MODE_CURRENT_CONTROL (mode 1)")
-print("- example: odrv0.axis0.controller.config.control_mode = CTRL_MODE_VOLTAGE_CONTROL (mode 0)")
-
-
-print("- checking for errors: odrv0.axis0.motor.is_calibrated")
-print("- checking for errors: odrv0.axis0.motor.error")
-print("-   note error is given in decimal --> convert to hex to find")
-print("- checking for encoder: odrv0.axis0.encoder.shadow_count")
-print("- checking for errors: hex(odrv0.axis0.encoder.error)")
-print("-   note 0x30 is 0x10 | 0x20  (brake resistor unexpectedly disarmed + motor unexpectedly disarmed))")
-print("- checking for errors: hex(odrv0.axis0.error)")
-print("- checking for control mode: odrv0.axis0.controller.config.control_mode")
------------------------------------------------------------------------"""
-
 def posctrl():
-	print("my_drive.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL")
-
+	#print("my_drive.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL")
+	my_drive.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL  # seems like this is needed if last command was idle state
+	time.sleep(1.5)
+	my_drive.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL
+	print("defaulted to position control 'CTRL_MODE_POSITION_CONTROL")
+	time.sleep(1.5)
+	my_drive.axis0.controller.pos_setpoint = 1500
+	print("position set to 1500")
+	print("waiting...")
+	time.sleep(5)  #this is wait time in seconds-assuming move from 0
+	print("position at ~1500")
+	print("position set to 0")
+	print("waiting...")
+	time.sleep(5)
+	my_drive.axis0.controller.pos_setpoint = 0  # this doesn't seem to be working
+	print("position at ~0")
+	my_drive.axis0.requested_state = AXIS_STATE_IDLE  # not sure, seems that this is needed if another position command comes in after
 	main()
 
 def velctrl():
@@ -151,9 +155,12 @@ def currentctrl():
 	main() 
 
 def idle():
-	print("my_drive.axis0.requested_state = AXIS_STATE_IDLE")
+	my_drive.axis0.requested_state = AXIS_STATE_IDLE
 
 	main()
+
+def reset():
+	my_drive.reboot()
 
 def restart():
 	restart = input("Do you wish to restart (y/n)? ").lower()
@@ -164,28 +171,27 @@ def restart():
 		userInput = "0"
 		mode = "0"
 		exit()
-"""-----------------------------------------------------------------------"""
 
-def calicheck():
-	calibration = my_drive.axis0.motor.is_calibrated
-	print("hi")
+#def calicheck():
+#	calibration = my_drive.axis0.motor.is_calibrated
+#	print(calibration)
+#	print("hi")
 
 def main():
 	debug = False
 	userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")
 	while debug == False:
 		if userInput == "calibration":
-			calicheck()  # so this doesn't work --> just put the 2 lines of code here
-			if calibration == True:  # so this needs to be not in quotes
+			#calicheck()
+			cal = my_drive.axis0.motor.is_calibrated
+			#print(calibration)
+			if cal == True:
 				print("Motor is already calibrated")
 				main()
 			else:
 				print ("Now Calibrating")
 				mode = "0"
 				print("mode " + mode)
-
-"""-----------------------------------------------------------------------"""
-
 				#restart = input("Do you wish to restart (y/n)? ").lower()
 				#restart = "y"
 				#if restart == "y":
@@ -196,6 +202,9 @@ def main():
 				#	userInput = "0"
 				#	mode = "0"
 				#	exit()
+
+				#print("error")
+				#main()
 		elif userInput == "pos":
 			print ("This is now in Position Control")
 			mode = "1"
@@ -226,8 +235,13 @@ def main():
 			print("mode " + mode)
 			idle()
 			restart()
+		elif userInput == "reset" or "reboot":
+			print("Rebooting ODrive")
+			mode = "reset"
+			print("mode " + mode)
+			reset()
 		elif userInput == "exit" or "close":
-			print ("Good Bye~~~")
+			print ("Goodbye~~~")
 			#mode = "stop"
 			#print("mode " + mode)
 			exit()
