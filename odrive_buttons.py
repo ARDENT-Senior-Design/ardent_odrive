@@ -62,7 +62,7 @@ def calibration():
 	my_drive.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
 	print("defaulted to position control 'AXIS_STATE_CLOSED_LOOP_CONTROL'")
 	
-	main()
+	#main()
 
 def posctrl():
 	#print("my_drive.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL")
@@ -156,65 +156,72 @@ def main():
 	#while debug == True
 		#userInput = input("What mode do you want? (ex: pos, vel, current, traj) ") - doesn't override
 	while de == False:
+		calicheck()
+		userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")
 		if userInput == "pos":
 			calicheck()
 			print ("Now in Position Control")
 			posctrl()
 			#restart()
-			debug = True
+			#debug = True
 			break
 		elif userInput == "vel":
 			calicheck()
 			print ("Now in Velocity Control")
 			velctrl()
-			restart()
+			#restart()
+			break
 		elif userInput == "traj":
 			calicheck()
 			print ("Now in Trajectory Control")
 			trajctrl()
-			restart()
+			#restart()
+			break
 		elif userInput == "current":
 			calicheck()
 			print ("Now in Current Control")
 			currentctrl()
-			restart()
+			#restart()
+			break
+		elif userInput == "exit" or "leave":  # this seems to need to be here instead of lower otherwise program loops at statement at this line
+			bye()
+			#reset()  # this means calibration is required after restart of script
+			exit()
+			break
 		elif userInput == "calibration" or "cali":
 			calicheck()
-			#main()
+			main()
 		elif userInput == "stop" or "s":
 			print ("Stopping Motor")
 			idle()
-			restart()
-		elif userInput == "exit" or "leave": # "leave" or "close"
-			bye()
-			reset()
-			exit()
+			#restart()
+			break
 		else:
 			print ("That is not a valid entry, please try pos, vel, current, traj")
-			main()
+			#main()
+			break
 
 
 
 
 if __name__ == "__main__":
+	print("finding an ODrive...")
+	my_drive = odrive.find_any()
+	print("found odrive")
 	while debug == False:
 		# Find a connected ODrive (this will block until you connect one)
 		de = False
-		print("finding an ODrive...")
-		my_drive = odrive.find_any()
-		print("found odrive")
-		userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")
+		#userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")
 		main()
 	while debug == True:
 		print("Not looking for ODrive")
 		de = False
-		#exit()
-		main()
+		exit()
 	#userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")
 	#main()
 
 
-"""---------------------------Window Object (Tkinter----------------------
+"""---------------------------Window Object (Tkinter)---------------------
 # Create Window Object
 #window=Tk()
 
@@ -243,7 +250,7 @@ b1.configure(text="Close")
 
 #window.mainloop()
 
-   ---------------------------Window Object (Tkinter----------------------"""
+   ---------------------------Window Object (Tkinter)---------------------"""
 
 """---------------------------Archieve------------------------------------
 mode = "0"
@@ -272,17 +279,24 @@ print("- checking for errors: hex(odrv0.axis0.error)")
 print("- checking for control mode: odrv0.axis0.controller.config.control_mode")
    ---------------------------ODrive Notes--------------------------------"""
 
+"""---------------------------Bug Fixes-----------------------------------"""
+# fix moving to multiple positions
+# check if calibrated at each mode - if not, prompt to calibrate
+# reset userInput so it doesn't loop - was becauuse value stays when in a while loop, used break, reprompted, re-entered loop, fixed
+# when userInput = "exit" --> Motor is Calibrated --> why? --> position of userInput=exit is 5th instead of lower otherwise program loops at statement at that line
+# put calicheck() back at each mode - rn if not calibrated, will calibrate, return and do the mode switch twice (pos ctrl and pos ctrl) --> had main() at end of calibration()
+"""---------------------------Bug Fixes-----------------------------------"""
+
 """---------------------------Development---------------------------------"""
-# reset userInput so it doesn't loop
+# spelling of control modes when switching to each
+# .lower() everywhere?
 # prompt user for what value to change to specific pos/vel
 # while loop for calibration - notifies that calibration has completed (not before)
  
 # odrive not found, retry?
+# main(userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")) - haha figure this out
 # write on pop up window instead of cmd
 # integrate odrive_demo.py as well?
 # reset input() variable instead of setting it to zero (goes to error if restarted from any mode)
 # getting rid of unnecessary varables
 """---------------------------Development---------------------------------"""
-
-# fix moving to multiple positions
-# check if calibrated at each mode - if not, prompt to calibrate
