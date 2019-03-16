@@ -155,12 +155,14 @@ def main():
 	#userInput = askInput
 	#while debug == True
 		#userInput = input("What mode do you want? (ex: pos, vel, current, traj) ") - doesn't override
-	while debug == False:
+	while de == False:
 		if userInput == "pos":
 			calicheck()
 			print ("Now in Position Control")
 			posctrl()
-			restart()
+			#restart()
+			debug = True
+			break
 		elif userInput == "vel":
 			calicheck()
 			print ("Now in Velocity Control")
@@ -195,15 +197,21 @@ def main():
 
 
 if __name__ == "__main__":
-	if debug == False:
+	while debug == False:
 		# Find a connected ODrive (this will block until you connect one)
+		de = False
 		print("finding an ODrive...")
 		my_drive = odrive.find_any()
 		print("found odrive")
-	else:
+		userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")
+		main()
+	while debug == True:
 		print("Not looking for ODrive")
-	userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")
-	main()
+		de = False
+		#exit()
+		main()
+	#userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")
+	#main()
 
 
 """---------------------------Window Object (Tkinter----------------------
