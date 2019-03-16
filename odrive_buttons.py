@@ -10,10 +10,19 @@ from odrive.enums import *
 import time
 import math
 
-# Find a connected ODrive (this will block until you connect one)
-print("finding an odrive...")
-my_drive = odrive.find_any()
-print("found odrive")
+
+debug = False  # set this before running the code
+#askInput = input("What mode do you want? (ex: pos, vel, current, traj) ")
+
+
+#def debug():
+#	if debug == False:
+#		# Find a connected ODrive (this will block until you connect one)
+#		print("finding an ODrive...")
+#		my_drive = odrive.find_any()
+#		print("found odrive")
+#	else:
+#		print("Not looking for ODrive")
 
 # Defining stuff for main code
 def calibration():
@@ -23,7 +32,7 @@ def calibration():
 #	print("found odrive")
 
 	# Calibrate motor and wait for it to finish
-	print("configuring odrive")
+	print("configuring ODrive")
 	# Velocity Tolerance Limit - disables the tolerance check for position control
 	my_drive.axis0.controller.config.vel_limit_tolerance = 0.0
 	# Motor Configuration - pole pairs = number of ??
@@ -42,7 +51,7 @@ def calibration():
 	my_drive.axis0.motor.config.current_lim = 30.0  # changed from 30.0
 	# Encoder Configuration - setting encoder to use indexing
 	my_drive.axis0.encoder.config.use_index = 1  # True
-	print("odrive configured")
+	print("ODrive configured")
 
 	print("starting calibration...")
 	my_drive.axis0.requested_state = AXIS_STATE_FULL_CALIBRATION_SEQUENCE
@@ -104,9 +113,14 @@ def reset():
 def restart():
 	restart = input("Do you wish to restart (y/n)? ").lower()
 	if restart == "y":
-		userInput = "0"
+		#userInput = "0" - doesn't work
+		#userInput = input("What mode do you want? (ex: pos, vel, current, traj) ") - doesn't override
+		#userInput = input("something else") - doesn't override either
+		#debug = True
+		main()
 	else:
-		userInput = "0"
+		#userInput = "0" - doesn't work
+		#userInput = input("What mode do you want? (ex: pos, vel, current, traj) ") - doesn't override
 		exit()
 
 def calicheck():
@@ -138,8 +152,9 @@ def bye():
 
 
 def main():
-	debug = False
-	userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")
+	#userInput = askInput
+	#while debug == True
+		#userInput = input("What mode do you want? (ex: pos, vel, current, traj) ") - doesn't override
 	while debug == False:
 		if userInput == "pos":
 			calicheck()
@@ -180,6 +195,14 @@ def main():
 
 
 if __name__ == "__main__":
+	if debug == False:
+		# Find a connected ODrive (this will block until you connect one)
+		print("finding an ODrive...")
+		my_drive = odrive.find_any()
+		print("found odrive")
+	else:
+		print("Not looking for ODrive")
+	userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")
 	main()
 
 
