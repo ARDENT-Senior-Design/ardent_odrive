@@ -156,7 +156,7 @@ def bye():
 	print("       |___/      ")
 
 def updateSetpoints():
-	print("I have updated the setpoints")
+	print("I have updated the setpoints.")
 
 def main():
 	#userInput = askInput
