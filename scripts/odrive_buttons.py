@@ -1,3 +1,8 @@
+
+#!/usr/bin/env python
+
+#Import ros pacakges
+import rospy
 #Import everything from tkinter
 from tkinter import *
 import time
@@ -150,11 +155,17 @@ def bye():
 	print("        __/ |     ")
 	print("       |___/      ")
 
+def updateSetpoints():
+	print("I have updated the setpoints")
 
 def main():
 	#userInput = askInput
 	#while debug == True
 		#userInput = input("What mode do you want? (ex: pos, vel, current, traj) ") - doesn't override
+    rospy.init_node('odrive', anonymous=True)
+	rospy.Subscriber("chatter", String, updateSetpoints)
+	pub = rospy.Publisher('chatter', String, queue_size=10)
+
 	while de == False:
 		calicheck()
 		userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")
@@ -200,6 +211,7 @@ def main():
 			print ("That is not a valid entry, please try pos, vel, current, traj")
 			#main()
 			break
+		rospy.spin()
 
 
 
