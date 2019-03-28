@@ -28,12 +28,12 @@ debug = False  # set this before running the code
 #	else:
 #		print("Not looking for ODrive")
 
-# Defining stuff for main code
+# Defining stuff for run_odrive code
 def calibration():
 	# Find a connected ODrive (this will block until you connect one)
-#	print("finding an odrive...")
-#	my_drive = odrive.find_any()
-#	print("found odrive")
+	# print("finding an odrive...")
+	# my_drive = odrive.find_any()
+	# print("found odrive")
 
 	# Calibrate motor and wait for it to finish
 	print("configuring ODrive")
@@ -66,7 +66,7 @@ def calibration():
 	my_drive.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
 	print("defaulted to position control 'AXIS_STATE_CLOSED_LOOP_CONTROL'")
 	
-	#main()
+	#run_odrive()
 
 def posctrl():
 	#print("my_drive.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL")
@@ -81,7 +81,7 @@ def posctrl():
 	time.sleep(5)  #this is wait time in seconds-assuming move from 0
 	print("position at ~1500")
 	#my_drive.axis0.requested_state = AXIS_STATE_IDLE  # not sure, seems that this is needed if another position command comes in after
-	#main()
+	#run_odrive()
 
 def velctrl():
 	my_drive.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL  # seems like this is needed if last command was idle state
@@ -94,22 +94,22 @@ def velctrl():
 	print("waiting...")
 	time.sleep(5)  #this is wait time in seconds-assuming move from 0
 	print("position at ~0")
-	#main()
+	#run_odrive()
 
 def trajctrl():
 	print("my_drive.axis0.controller.config.control_mode = CTRL_MODE_TRAJECTORY_CONTROL")
 
-	#main()
+	#run_odrive()
 
 def currentctrl():
 	print("my_drive.axis0.controller.config.control_mode = CTRL_MODE_CURRENT_CONTROL")
 
-	#main() 
+	#run_odrive() 
 
 def idle():
 	my_drive.axis0.requested_state = AXIS_STATE_IDLE
 
-	#main()
+	#run_odrive()
 
 def reset():
 	my_drive.reboot()
@@ -121,7 +121,7 @@ def restart():
 		#userInput = input("What mode do you want? (ex: pos, vel, current, traj) ") - doesn't override
 		#userInput = input("something else") - doesn't override either
 		#debug = True
-		main()
+		run_odrive()
 	else:
 		#userInput = "0" - doesn't work
 		#userInput = input("What mode do you want? (ex: pos, vel, current, traj) ") - doesn't override
@@ -132,7 +132,7 @@ def calicheck():
 	cal = my_drive.axis0.motor.is_calibrated
 	if cal == True:
 		print("Motor is calibrated")
-		#main()
+		#run_odrive()
 	else:
 		cali = input("Motor not calibrated. Calibrate now (y/n)? ").lower()
 		if cali == "y":
@@ -142,7 +142,7 @@ def calicheck():
 			print ("Calibration Completed")
 		else:
 			#userInput = "0"
-			main()
+			run_odrive()
 
 def bye():
 	print(" _                ")
@@ -164,7 +164,7 @@ def run_odrive():
 	#userInput = input("What mode do you want? (ex: pos, vel, current, traj) ") - doesn't override
 	main_rate = rospy.Rate(100) # hz        
 	# Start timer to run high-rate comms
-	fast_timer = rospy.Timer(rospy.Duration(1/float(self.odom_calc_hz)), self.fast_timer)
+	fast_timer = rospy.Timer(rospy.Duration(1/float(odom_calc_hz)), fast_timer)
 	while not rospy.is_shutdown():
 		calicheck()
 		userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")
@@ -200,7 +200,6 @@ def run_odrive():
 			break
 		elif userInput == "calibration" or "cali":
 			calicheck()
-			main()
 		elif userInput == "stop" or "s":
 			print ("Stopping Motor")
 			idle()
@@ -208,7 +207,6 @@ def run_odrive():
 			break
 		else:
 			print ("That is not a valid entry, please try pos, vel, current, traj")
-			#main()
 			break
 		rospy.spin()
 
