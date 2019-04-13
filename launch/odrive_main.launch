@@ -1,0 +1,37 @@
+<!-- -*- mode: XML -*- -->
+<launch>
+    <arg name="connect_on_startup"   default="true"/>
+    <arg name="calibrate_on_startup" default="false"/>
+    <arg name="engage_on_startup"    default="false"/>
+
+    <arg name="publish_odom" default="true"/>
+    <arg name="publish_tf"     default="false"/>
+    
+    <arg name="output"   default="screen"/>
+    <arg name="respawn"   default="false"/>
+
+
+    <node pkg="ardent_odrive" type="odrive_exec.py" name="odrive1" ns="odrive1" output="$(arg output)" respawn="$(arg respawn)">
+        
+        <param name="connect_on_startup"   value="$(arg connect_on_startup)"/>
+        <param name="calibrate_on_startup" value="$(arg calibrate_on_startup)"/>
+        <param name="engage_on_startup"    value="$(arg engage_on_startup)"/>
+        
+        <param name="publish_odom"    value="$(arg publish_odom)"/>
+        <param name="publish_tf"      value="$(arg publish_tf)"/>
+
+        <param name="odrive_index" value="1"/>
+    </node>
+    <node pkg="ardent_odrive" type="odrive_exec.py" name="odrive2" ns="odrive2" output="$(arg output)" respawn="$(arg respawn)">
+        
+        <param name="connect_on_startup"   value="$(arg connect_on_startup)"/>
+        <param name="calibrate_on_startup" value="$(arg calibrate_on_startup)"/>
+        <param name="engage_on_startup"    value="$(arg engage_on_startup)"/>
+        
+        <param name="publish_odom"    value="$(arg publish_odom)"/>
+        <param name="publish_tf"      value="$(arg publish_tf)"/>
+
+        <param name="odrive_index" value="2"/>
+    </node>
+
+</launch>

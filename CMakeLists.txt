@@ -9,7 +9,9 @@ project(ardent_odrive)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS 
                 message_generation
-                rospy)
+                rospy
+                std_msgs
+                geometry_msgs)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -158,6 +160,7 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
 install(PROGRAMS
   scripts/odrive_buttons
+  scripts/odrive_exec
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

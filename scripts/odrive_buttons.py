@@ -164,7 +164,7 @@ def run_odrive():
 	#userInput = input("What mode do you want? (ex: pos, vel, current, traj) ") - doesn't override
 	main_rate = rospy.Rate(100) # hz        
 	# Start timer to run high-rate comms
-	fast_timer = rospy.Timer(rospy.Duration(1/float(odom_calc_hz)), fast_timer)
+	# fast_timer = rospy.Timer(rospy.Duration(1/float(odom_calc_hz)), fast_timer)
 	while not rospy.is_shutdown():
 		calicheck()
 		userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")
@@ -208,7 +208,8 @@ def run_odrive():
 		else:
 			print ("That is not a valid entry, please try pos, vel, current, traj")
 			break
-		rospy.spin()
+		main_rate.sleep()
+		# rospy.spin()
 
 
 
