@@ -19,98 +19,115 @@ debug = False  # set this before running the code
 #	if debug == False:
 #		# Find a connected ODrive (this will block until you connect one)
 #		print("finding an ODrive...")
-#		my_drive = odrive.find_any()
+#		odrv0 = odrive.find_any()
 #		print("found odrive")
 #	else:
 #		print("Not looking for ODrive")
 
 # Defining stuff for main code
-def calibration():
-	# Find a connected ODrive (this will block until you connect one)
-#	print("finding an odrive...")
-#	my_drive = odrive.find_any()
-#	print("found odrive")
-
-	# Calibrate motor and wait for it to finish
+def configuration():
+		# Calibrate motor and wait for it to finish
 	print("configuring ODrive")
 	# Velocity Tolerance Limit - disables the tolerance check for position control
-	my_drive.axis0.controller.config.vel_limit_tolerance = 0.0
-	# Motor Configuration - pole pairs = number of ??
-	my_drive.axis0.motor.config.pole_pairs = 20
-	# Encoder Counts Per Revolution - this is half the encoder resolution due (1:2 ratio)
-	my_drive.axis0.encoder.config.cpr = 4096
+	odrv0.axis0.controller.config.vel_limit_tolerance = 0.0
+	# Motor Configuration - pole pairs = number of permanent magnets, not coils
+	odrv0.axis0.motor.config.pole_pairs = 20
+	# Encoder Counts Per Revolution - this is 4 times the PPR (assuming quadrature encoder)
+	odrv0.axis0.encoder.config.cpr = 4000 # 4000 (decimal) and not 4096 (binary)
 	# Velocity Limit - keeping this low for now, but the motor can go much higher
-	my_drive.axis0.controller.config.vel_limit = 2000.0
+	odrv0.axis0.controller.config.vel_limit = 2000.0
 	# Current Calibration
-	my_drive.axis0.motor.config.calibration_current = 20.0  # changed from 20.0
+	odrv0.axis0.motor.config.calibration_current = 20.0  # changed from 20.0
 	# Phase Inductance
-	my_drive.axis0.motor.config.phase_inductance = 2.3983637220226228e-05
+	odrv0.axis0.motor.config.phase_inductance = 2.3983637220226228e-05
 	# Phase Resistance
-	my_drive.axis0.motor.config.phase_resistance = 0.058687932789325714
+	odrv0.axis0.motor.config.phase_resistance = 0.058687932789325714
 	# Current Limit - this is to protect the power supply
-	my_drive.axis0.motor.config.current_lim = 30.0  # changed from 30.0
+	odrv0.axis0.motor.config.current_lim = 5.0  # changed from 30.0
 	# Encoder Configuration - setting encoder to use indexing
-	my_drive.axis0.encoder.config.use_index = 1  # True
-	print("ODrive configured")
+	odrv0.axis0.encoder.config.use_index = 0  # False b/c AS5047P index weird
+	print("ODrive configured\n")
 
+def calibration():  #class: stop
+	# Find a connected ODrive (this will block until you connect one)
+#	print("finding an odrive...")
+#	odrv0 = odrive.find_any()
+#	print("found odrive")
 	print("starting calibration...")
-	my_drive.axis0.requested_state = AXIS_STATE_FULL_CALIBRATION_SEQUENCE
-	while my_drive.axis0.current_state != AXIS_STATE_IDLE:
+	odrv0.axis0.requested_state = AXIS_STATE_FULL_CALIBRATION_SEQUENCE
+	while odrv0.axis0.current_state != AXIS_STATE_IDLE:
 	    time.sleep(0.1)
 	print("full calibration sequence completed")
 
-	my_drive.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
+	odrv0.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
 	print("defaulted to position control 'AXIS_STATE_CLOSED_LOOP_CONTROL'")
-	
+	print ("Calibration Completed\n")
 	#main()
 
-def posctrl():
-	#print("my_drive.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL")
-	my_drive.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL  # seems like this is needed if last command was idle state
-	time.sleep(1.5)
-	my_drive.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL
+def posctrl():  #class: motion
+	#print("odrv0.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL")
+	odrv0.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL  # seems like this is needed if last command was idle state
+	time.sleep(.5)
+	odrv0.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL
 	print("defaulted to position control 'CTRL_MODE_POSITION_CONTROL")
-	time.sleep(1.5)
-	my_drive.axis0.controller.pos_setpoint = 1500
-	print("position set to 1500")
+	time.sleep(.5)
+	odrv0.axis0.controller.pos_setpoint = 10000
+	print("position set to 10000")
 	print("waiting...")
-	time.sleep(5)  #this is wait time in seconds-assuming move from 0
-	print("position at ~1500")
-	#my_drive.axis0.requested_state = AXIS_STATE_IDLE  # not sure, seems that this is needed if another position command comes in after
+	time.sleep(2)  #this is wait time in seconds-assuming move from 0
+	print("position at ~10000\n")
+	#odrv0.axis0.requested_state = AXIS_STATE_IDLE  # not sure, seems that this is needed if another position command comes in after
 	#main()
 
-def velctrl():
-	my_drive.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL  # seems like this is needed if last command was idle state
-	time.sleep(1.5)
-	my_drive.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL
-	#print("my_drive.axis0.controller.config.control_mode = CTRL_MODE_VELOCITY_CONTROL")
-	time.sleep(1.5)
-	my_drive.axis0.controller.pos_setpoint = 0  # this doesn't seem to be working
-	print("position set to 0")
+def velctrl():  #class: motion
+	odrv0.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL  # seems like this is needed if last command was idle state
+	time.sleep(.5)
+	odrv0.axis0.controller.config.control_mode = CTRL_MODE_POSITION_CONTROL
+	#print("odrv0.axis0.controller.config.control_mode = CTRL_MODE_VELOCITY_CONTROL")
+	time.sleep(.5)
+	odrv0.axis0.controller.pos_setpoint = -10000  # this doesn't seem to be working
+	print("position set to -10000")
 	print("waiting...")
-	time.sleep(5)  #this is wait time in seconds-assuming move from 0
-	print("position at ~0")
+	time.sleep(2)  #this is wait time in seconds-assuming move from 0
+	print("position at ~-10000\n")
 	#main()
 
-def trajctrl():
-	print("my_drive.axis0.controller.config.control_mode = CTRL_MODE_TRAJECTORY_CONTROL")
+def trajctrl():  #class: motion
+	print("odrv0.axis0.controller.config.control_mode = CTRL_MODE_TRAJECTORY_CONTROL")
 
 	#main()
 
-def currentctrl():
-	print("my_drive.axis0.controller.config.control_mode = CTRL_MODE_CURRENT_CONTROL")
+def currentctrl():  #class: motion
+	print("odrv0.axis0.controller.config.control_mode = CTRL_MODE_CURRENT_CONTROL")
 
 	#main() 
 
-def idle():
-	my_drive.axis0.requested_state = AXIS_STATE_IDLE
+def error():
+	ctrlE = odrv0.axis0.controller.error
+	motorE = odrv0.axis0.motor.error
+	encoderE = odrv0.axis0.encoder.error
+	if ctrlE == True:
+		print("There is a controller error\n")
+	elif motorE == True:
+		print("There is a motor error\n")
+	elif encoderE == True:
+		print("There is an encoder error\n")
+	else:
+		print("No errors\n")
 
+def idle():  #class: stop
+	odrv0.axis0.requested_state = AXIS_STATE_IDLE
 	#main()
 
-def reset():
-	my_drive.reboot()
+def reset():  #class: stop
+	bye()
+	odrv0.reboot()
 
-def restart():
+def count():
+	print(odrv0.axis0.encoder.shadow_count)
+	print("")
+
+def restart():  #class: error
 	restart = input("Do you wish to restart (y/n)? ").lower()
 	if restart == "y":
 		#userInput = "0" - doesn't work
@@ -123,11 +140,12 @@ def restart():
 		#userInput = input("What mode do you want? (ex: pos, vel, current, traj) ") - doesn't override
 		exit()
 
-def calicheck():
+def calicheck():  #class: error
 #if userInput == "calibration":
-	cal = my_drive.axis0.motor.is_calibrated
+	cal = odrv0.axis0.motor.is_calibrated
 	if cal == True:
-		print("Motor is calibrated")
+		cal = True
+		#print("Motor is calibrated")
 		#main()
 	else:
 		cali = input("Motor not calibrated. Calibrate now (y/n)? ").lower()
@@ -135,10 +153,10 @@ def calicheck():
 			#userInput = "0"
 			print ("Now Calibrating")
 			calibration()
-			print ("Calibration Completed")
 		else:
 			#userInput = "0"
-			main()
+			restart()
+			#main()
 
 def bye():
 	print(" _                ")
@@ -157,8 +175,13 @@ def main():
 		#userInput = input("What mode do you want? (ex: pos, vel, current, traj) ") - doesn't override
 	while de == False:
 		calicheck()
-		userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")
-		if userInput == "pos":
+		userInput = input("What mode do you want? (ex: pos, vel) ").lower()
+		if userInput == "s":  #if there's an or it gets stuck
+			print ("Stopping Motor")
+			idle()
+			#restart()
+			break
+		elif userInput == "pos":
 			calicheck()
 			print ("Now in Position Control")
 			posctrl()
@@ -183,21 +206,30 @@ def main():
 			currentctrl()
 			#restart()
 			break
-		elif userInput == "exit" or "leave":  # this seems to need to be here instead of lower otherwise program loops at statement at this line
+		elif userInput == "exit":  # this seems to need to be here instead of lower otherwise program loops at statement at this line
 			bye()
 			#reset()  # this means calibration is required after restart of script
 			exit()
 			break
-		elif userInput == "calibration" or "cali":
-			calicheck()
+		elif userInput == "calibration":
+			calibration()
 			main()
-		elif userInput == "stop" or "s":
-			print ("Stopping Motor")
-			idle()
-			#restart()
-			break
+		elif userInput == "configuration":
+			configuration()
+			main()
+		elif userInput == "error":
+			error()
+			main()
+		elif userInput == "reset":
+			reset()
+		elif userInput == "count":
+			count()
+		elif userInput == "hi":
+			print("Hello There! How are you?\n")
+		elif userInput == "good":
+			print("That's good to hear :D\n")						
 		else:
-			print ("That is not a valid entry, please try pos, vel, current, traj")
+			print ("That is not a valid entry, please try pos, vel, current, traj\n")
 			#main()
 			break
 
@@ -206,15 +238,15 @@ def main():
 
 if __name__ == "__main__":
 	print("finding an ODrive...")
-	my_drive = odrive.find_any()
-	print("found odrive")
+	odrv0 = odrive.find_any()
+	print("found odrive\n" )
 	while debug == False:
 		# Find a connected ODrive (this will block until you connect one)
 		de = False
 		#userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")
 		main()
 	while debug == True:
-		print("Not looking for ODrive")
+		print("Not looking for ODrive\n")
 		de = False
 		exit()
 	#userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")
@@ -250,7 +282,7 @@ b1.configure(text="Close")
 
 #window.mainloop()
 
-   ---------------------------Window Object (Tkinter)---------------------"""
+   ---------------------------Window Object (Tkinter----------------------"""
 
 """---------------------------Archieve------------------------------------
 mode = "0"
@@ -258,6 +290,12 @@ print("mode " + mode)
 elif userInput == "reset" or "reboot":
 	print("Rebooting ODrive")
 	reset()
+
+while odrv0.axis0.current_state != AXIS_STATE_IDLE:
+    if userInput == "s":  #if there's an or it gets stuck
+		print ("Stopping Motor")
+		idle()
+
    ---------------------------Archieve------------------------------------"""
 
 """---------------------------ODrive Notes--------------------------------
@@ -285,15 +323,28 @@ print("- checking for control mode: odrv0.axis0.controller.config.control_mode")
 # reset userInput so it doesn't loop - was becauuse value stays when in a while loop, used break, reprompted, re-entered loop, fixed
 # when userInput = "exit" --> Motor is Calibrated --> why? --> position of userInput=exit is 5th instead of lower otherwise program loops at statement at that line
 # put calicheck() back at each mode - rn if not calibrated, will calibrate, return and do the mode switch twice (pos ctrl and pos ctrl) --> had main() at end of calibration()
+# optional classes added as comments to each def()
+# now correctly shifts between each state (ex. pos, vel, s) - don't use the or (ie "stop" or "s")
+# configuration at start taken out (assuming config already set)
+# can check for controller, motor, and encoder errors
+# added spaces after printouts for easy reading
+# shadow_count added as count()
+# can now reboot() odrive
+# timing changed to .5 and 2 from 1.5 and 5 b/c reaching position is quick - no need to worry about command getting stopped prematurely
+# .lower() everywhere? - make all lowercase
+# changed to "odrv0" from "my_drive"
+# can say "hi"
 """---------------------------Bug Fixes-----------------------------------"""
 
 """---------------------------Development---------------------------------"""
 # spelling of control modes when switching to each
-# .lower() everywhere?
 # prompt user for what value to change to specific pos/vel
+# add velocity control (is currently just position a second time)
 # while loop for calibration - notifies that calibration has completed (not before)
- 
-# odrive not found, retry?
+# be able to stop motor at anytime (multiple lines running at the same time)
+# add workingwithHallppr.json to odrive_buttons.py's def configuration(): - right now is original, gains are off b/c optical
+
+# odrive not found, retry? - loop needs to time-out
 # main(userInput = input("What mode do you want? (ex: pos, vel, current, traj) ")) - haha figure this out
 # write on pop up window instead of cmd
 # integrate odrive_demo.py as well?
